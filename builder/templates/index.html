@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Daily Papers - {{ date }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>{{ date }}</h1>
+    <p class="stats">{{ stats.total }} papers
+        {% for cat, count in stats.by_category.items() %}
+        <span class="stat-badge">{{ cat }} ({{ count }})</span>
+        {% endfor %}
+    </p>
+</section>
+
+<section class="controls">
+    <input type="text" id="search-input" placeholder="Search papers..." class="search-box">
+    <div class="filter-chips" id="category-filters">
+        <button class="chip active" data-category="all">All</button>
+        {% for cat in categories %}
+        <button class="chip" data-category="{{ cat }}">{{ category_labels.get(cat, cat) }}</button>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="papers-grid" id="papers-grid">
+    {% for paper in papers %}
+    {% include "paper_card.html" %}
+    {% endfor %}
+</section>
+
+{% if not papers %}
+<section class="empty-state">
+    <p>No papers found for today. Check back later!</p>
+</section>
+{% endif %}
+{% endblock %}

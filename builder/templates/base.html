@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Daily Papers{% endblock %}</title>
+    <link rel="stylesheet" href="{{ root }}css/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="{{ root }}index.html" class="logo">Daily Papers</a>
+            <nav>
+                <a href="{{ root }}index.html">Today</a>
+                <a href="{{ root }}archive/index.html">Archive</a>
+            </nav>
+            <button id="lang-toggle" class="btn-lang" title="Toggle Korean/English">KO/EN</button>
+        </div>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>Auto-generated daily from arXiv, Semantic Scholar, and Papers With Code. Summaries by Claude.</p>
+    </footer>
+    <script src="{{ root }}js/app.js"></script>
+</body>
+</html>

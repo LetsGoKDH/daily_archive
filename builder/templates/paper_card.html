@@ -1,0 +1,32 @@
+<article class="paper-card" data-categories="{{ paper.categories | join(',') }}">
+    <div class="card-header">
+        <div class="card-badges">
+            {% for cat in paper.categories[:3] %}
+            <span class="badge badge-{{ cat | replace('.', '-') | replace('/', '-') }}">{{ category_labels.get(cat, cat) }}</span>
+            {% endfor %}
+            <span class="badge badge-source">{{ paper.source }}</span>
+        </div>
+    </div>
+    <h3 class="card-title">
+        <a href="{{ paper.url }}" target="_blank" rel="noopener">{{ paper.title }}</a>
+    </h3>
+    <p class="card-authors">{{ paper.authors[:5] | join(', ') }}{% if paper.authors | length > 5 %} et al.{% endif %}</p>
+
+    <div class="card-summary">
+        <p class="summary-en">{{ paper.summary_en }}</p>
+        <p class="summary-ko" style="display:none;">{{ paper.summary_ko }}</p>
+    </div>
+
+    <details class="card-abstract">
+        <summary>Abstract</summary>
+        <p>{{ paper.abstract }}</p>
+    </details>
+
+    <div class="card-links">
+        <a href="{{ paper.url }}" target="_blank" rel="noopener" class="link-btn">Paper</a>
+        <a href="{{ paper.pdf_url }}" target="_blank" rel="noopener" class="link-btn">PDF</a>
+        {% if paper.code_url %}
+        <a href="{{ paper.code_url }}" target="_blank" rel="noopener" class="link-btn link-code">Code</a>
+        {% endif %}
+    </div>
+</article>

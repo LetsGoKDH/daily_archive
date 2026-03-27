@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Daily Papers - Archive{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Archive</h1>
+    <p class="stats">{{ dates | length }} days of papers</p>
+</section>
+
+<section class="archive-list">
+    {% for item in dates %}
+    <a href="{{ root }}archive/{{ item.date }}.html" class="archive-item">
+        <span class="archive-date">{{ item.date }}</span>
+        <span class="archive-count">{{ item.count }} papers</span>
+    </a>
+    {% endfor %}
+</section>
+
+{% if not dates %}
+<section class="empty-state">
+    <p>No archived papers yet.</p>
+</section>
+{% endif %}
+{% endblock %}
