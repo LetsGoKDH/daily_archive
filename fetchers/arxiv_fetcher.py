@@ -1,6 +1,7 @@
 """Fetch recent papers from arXiv API."""
 
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -38,13 +39,8 @@ def fetch(days_back=2, max_results=None):
     )
 
     print(f"[arxiv] Fetching from: {query_url}")
-    req = urllib.request.Request(query_url)
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        xml_data = resp.read()
-    feed = feedparser.parse(xml_data)
-
-    if feed.bozo and not feed.entries:
-        print(f"[arxiv] Error parsing feed: {feed.bozo_exception}")
+    feed = _fetch_with_retry(query_url)
+    if feed is None:
         return []
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_back)
@@ -61,6 +57,37 @@ def fetch(days_back=2, max_results=None):
 
     print(f"[arxiv] Found {len(papers)} papers from last {days_back} days")
     return papers
+
+
+def _fetch_with_retry(url, max_retries=3):
+    """Fetch arXiv feed with retry on 503 errors."""
+    for attempt in range(max_retries):
+        try:
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=90) as resp:
+                xml_data = resp.read()
+            feed = feedparser.parse(xml_data)
+            if feed.bozo and not feed.entries:
+                print(f"[arxiv] Parse error: {feed.bozo_exception}")
+                return None
+            return feed
+        except urllib.error.HTTPError as e:
+            if e.code == 503 and attempt < max_retries - 1:
+                wait = 5 * (attempt + 1)
+                print(f"[arxiv] 503 error, retrying in {wait}s... ({attempt + 1}/{max_retries})")
+                time.sleep(wait)
+            else:
+                print(f"[arxiv] HTTP error: {e}")
+                return None
+        except (urllib.error.URLError, TimeoutError) as e:
+            if attempt < max_retries - 1:
+                wait = 5 * (attempt + 1)
+                print(f"[arxiv] Connection error, retrying in {wait}s... ({attempt + 1}/{max_retries})")
+                time.sleep(wait)
+            else:
+                print(f"[arxiv] Failed after {max_retries} attempts: {e}")
+                return None
+    return None
 
 
 def _parse_entry(entry):

@@ -46,7 +46,7 @@ S2_VENUES = ["Interspeech", "ICASSP", "ACL", "EMNLP", "IEEE/ACM Transactions"]
 
 # Limits
 MAX_PAPERS_PER_DAY = 50
-ARXIV_MAX_RESULTS = 200
+ARXIV_MAX_RESULTS = 100
 
 # OpenAI API
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
